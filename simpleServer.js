@@ -4,12 +4,22 @@ var app      = express();
 
 //ESTABLISH MONGO CONNECTION
 var mongoose = require('mongoose');
-var db = mongoose.createConnection('mongodb://54.174.204.154/test');
-var testSchema = new mongoose.Schema({
-	"name": String,
-	"test": String
+var testdb = mongoose.createConnection('mongodb://52.90.30.153/test');
+
+var testSchema = mongoose.Schema({
+    test: String,
+		user: String
 });
-var Test = db.model('FitAssist', testSchema, 'FitAssist');
+
+var userSchema = mongoose.Schema({
+		username: String,
+		password: String,
+		fullname: String
+})
+
+var testModel = testdb.model('Test', testSchema, 'Test');
+
+var userModel = testdb.model('Users', userSchema, 'Users');
 
 //=======================================//
 //=========SET UP SOME ROUTES============//
@@ -17,6 +27,20 @@ var Test = db.model('FitAssist', testSchema, 'FitAssist');
 //Test Route
 app.get('/uh', function(req, res) {
     res.send('Hello World');
+});
+
+app.get('/gettests', function(req, res) {
+    // use mongoose to get all todos in the database
+    testModel.find({}, function(error, data){
+        res.json(data);
+    });
+});
+
+app.get('/getusers', function(req, res) {
+    // use mongoose to get all todos in the database
+    userModel.find({}, function(error, data){
+        res.json(data);
+    });
 });
 
 app.all('/*', function(req, res, next) {
