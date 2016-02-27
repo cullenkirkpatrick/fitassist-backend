@@ -9,27 +9,12 @@ var testSchema = new mongoose.Schema({
 	"name": String,
 	"test": String
 });
-var Test = db.model('WorkoutAssistant', testSchema, 'WorkoutAssistant');
+var Test = db.model('FitAssist', testSchema, 'FitAssist');
 
 //=======================================//
 //=========SET UP SOME ROUTES============//
 //=======================================//
-app.get('/gettests', function(req, res) {
-    // use mongoose to get all todos in the database
-    Test.findOne({}, function(error, data){
-        res.json(data);
-    });
-});
-
-app.get('/gettests/:user', function(req, res) {
-    // use mongoose to get all todos in the database
-    var query = Test.find({name:req.params.user});
-    console.log(req.params.user + " Logged In");
-    query.exec(function(err, data){
-        res.json(data);
-    });
-});
-
+//Test Route
 app.get('/uh', function(req, res) {
     res.send('Hello World');
 });
