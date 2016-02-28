@@ -46,14 +46,21 @@ var workoutModel = testdb.model('Workouts', workoutSchema, 'Workouts');
 
 //=======================================//
 //=========SET UP SOME ROUTES============//
+app.all('/*', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');
+    next();
+});
 //=======================================//
+
+
 //============Test Route=================//
 app.get('/uh', function(req, res) {
     res.send('Hello World');
 });
 
 //============USER ROUTES================//
-app.get('/getusers', function(req, res) {
+app.get('/api/getusers', function(req, res) {
     // use mongoose to get all todos in the database
     userModel.find({}, function(error, data){
         res.json(data);
@@ -61,27 +68,43 @@ app.get('/getusers', function(req, res) {
 });
 
 //==========MOVEMENT ROUTES=============//
-app.get('/getmovements', function(req, res) {
+app.get('/api/getmovements', function(req, res) {
     // use mongoose to get all todos in the database
     movementModel.find({}, function(error, data){
         res.json(data);
     });
 });
 
+app.post('/api/addmovement', function(req, res){
+		var movement = req;
+
+		var product;
+	  console.log("POST: ");
+	  console.log(req.body);
+	  movement = new movementModel({
+			name: "Test Movement",
+			category: "Test category",
+			subcategory: "Test subcategory"
+	  });
+	  movement.save(function(err) {
+	    if (!err) {
+	      return console.log("created");
+	    } else {
+	      return console.log(err);
+	    }
+	  });
+	  return res.send(movement);
+});
+
+
 //===========WORKOUT ROUTES=============//
-app.get('/getworkouts', function(req, res) {
+app.get('/api/getworkouts', function(req, res) {
     // use mongoose to get all todos in the database
     workoutModel.find({}, function(error, data){
         res.json(data);
     });
 });
 
-
-app.all('/*', function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With');
-    next();
-});
 //=======================================//
 //=======================================//
 //=======================================//
