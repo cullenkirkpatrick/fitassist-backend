@@ -4,45 +4,21 @@ var app      = express();
 
 //ESTABLISH MONGO CONNECTION
 var mongoose = require('mongoose');
-var testdb = mongoose.createConnection('mongodb://54.164.79.75/test');
+var testdb = mongoose.createConnection('mongodb://54.164.85.164/test');
 
 
 //==============USER DATA=============//
 var userSchema = mongoose.Schema({
 		username: String,
 		password: String,
-		fullname: String
+		name: {
+			first_name: String,
+			last_name: String
+		}
+		email: String,
+		user_type: String
 });
 var userModel = testdb.model('Users', userSchema, 'Users');
-
-//==============MOVEMENTS============//
-var movementSchema = mongoose.Schema({
-		name: String,
-		category: String,
-		subcategory: String,
-    pr: String
-});
-var movementModel = testdb.model('Movements', movementSchema, 'Movements');
-
-//==============WORKOUTS=============//
-var workoutSchema = mongoose.Schema({
-		date: String,
-		name: String,
-    type: String,
-    movements: {
-      name: String,
-  		category: String,
-  		subcategory: String,
-      repcount: String,
-      weight: String
-    },
-    repscheme: String,
-    rounds: String,
-    result: String
-});
-var workoutModel = testdb.model('Workouts', workoutSchema, 'Workouts');
-
-
 
 //=======================================//
 //=========SET UP SOME ROUTES============//
