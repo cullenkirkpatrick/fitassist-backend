@@ -43,44 +43,6 @@ app.get('/api/getusers', function(req, res) {
     });
 });
 
-//==========MOVEMENT ROUTES=============//
-app.get('/api/getmovements', function(req, res) {
-    // use mongoose to get all todos in the database
-    movementModel.find({}, function(error, data){
-        res.json(data);
-    });
-});
-
-app.post('/api/addmovement', function(req, res){
-		var movement = req;
-
-		var product;
-	  console.log("POST: ");
-	  console.log(req.body);
-	  movement = new movementModel({
-			name: "Test Movement",
-			category: "Test category",
-			subcategory: "Test subcategory"
-	  });
-	  movement.save(function(err) {
-	    if (!err) {
-	      return console.log("created");
-	    } else {
-	      return console.log(err);
-	    }
-	  });
-	  return res.send(movement);
-});
-
-
-//===========WORKOUT ROUTES=============//
-app.get('/api/getworkouts', function(req, res) {
-    // use mongoose to get all todos in the database
-    workoutModel.find({}, function(error, data){
-        res.json(data);
-    });
-});
-
 //=======================================//
 //=======================================//
 //=======================================//
