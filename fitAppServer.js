@@ -3,14 +3,14 @@ var express  = require('express');
 
 //ESTABLISH MONGO CONNECTION
 var mongoose = require('mongoose');
-var testdb = mongoose.createConnection('mongodb://54.164.85.164/test');
+var testdb = mongoose.createConnection('mongodb://MONGO_IP/test');
 
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var auth = require('auth');
 
-var stripe = require("stripe")("sk_test_8t9VU22taWVz5KPnVF1vYsI7");
+var stripe = require("stripe")("STRIPE KEY");
 
 var app      = express();
 
@@ -109,7 +109,7 @@ app.post('/login', function(req, res, next) {
 app.post('/new_fit_individual', function(req, res) {
 	stripe.customers.create({
 		source: req.body.token, // obtained with Stripe.js
-		plan: "fitness",
+		plan: "fitness_user",
 		email: "payinguser@example.com"
 	}, function(err, customer) {
 		res.send(customer);
@@ -119,39 +119,27 @@ app.post('/new_fit_individual', function(req, res) {
 app.post('/new_nutrition_individual', function(req, res) {
 	stripe.customers.create({
 		source: req.body.token, // obtained with Stripe.js
-		plan: "fitness_nutrition",
+		plan: "fitness_nutrition_user",
 		email: "payinguser@example.com"
 	}, function(err, customer) {
 		res.send(customer);
 	});
 });
 
-app.post('/new_basic_coach', function(req, res) {
-	stripe.customers.create({
-		source: req.body.token, // obtained with Stripe.js
-		plan: "basic",
-		email: "payinguser@example.com"
-	}, function(err, customer) {
-		res.send(customer);
-	});
+app.post('/update_subscripton', function(req, res) {
+	stripe.subscriptions.update(
+	  req.body.sub_id,
+	  { plan: "fitness_nutrition" },
+	  function(err, subscription) {
+	    res.send(subscription);
+	  }
+	);
 });
 
-app.post('/new_pro_coach', function(req, res) {
-	stripe.customers.create({
-		source: req.body.token, // obtained with Stripe.js
-		plan: "pro",
-		email: "payinguser@example.com"
-	}, function(err, customer) {
-		res.send(customer);
-	});
-});
-
-app.post('/new_elite_coach', function(req, res) {
-	stripe.customers.create({
-		source: req.body.token, // obtained with Stripe.js
-		plan: "elite",
-		email: "payinguser@example.com"
-	}, function(err, customer) {
+app.post('/cancel_subscription', function(req, res) {
+	stripe.subscriptions.del(
+  req.body.sub_id,
+  function(err, customer) {
 		res.send(customer);
 	});
 });
@@ -165,9 +153,9 @@ app.get('/users', function(req, res) {
 });
 
 app.post("/users", function(req, res) {
-  var newContact = req.body;
+  var newUser = req.body;
 
-  testdb.collection('Users').insertOne(newContact, function(err, doc) {
+  testdb.collection('Users').insertOne(newUser, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new contact.");
     } else {
