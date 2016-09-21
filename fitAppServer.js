@@ -3,14 +3,14 @@ var express  = require('express');
 
 //ESTABLISH MONGO CONNECTION
 var mongoose = require('mongoose');
-var testdb = mongoose.createConnection('mongodb://MONGO_IP/test');
+var testdb = mongoose.createConnection('mongodb://54.164.85.164/test');
 
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var auth = require('auth');
 
-var stripe = require("stripe")("STRIPE KEY");
+var stripe = require("stripe")("sk_test_8t9VU22taWVz5KPnVF1vYsI7");
 
 var app      = express();
 
@@ -62,7 +62,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 
-//==============USER DATA=============//
+//==============USER MODEL=============//
 var userSchema = mongoose.Schema({
 	username: String,
 	password: String,
@@ -76,6 +76,29 @@ var userSchema = mongoose.Schema({
 	stripe_plan_name: String
 });
 var userModel = testdb.model('Users', userSchema, 'Users');
+
+//==============WORKOUTS MODEL=============//
+var workoutsSchema = mongoose.Schema({
+	user: {
+		id: String,
+		first_name: String,
+		last_name: String
+	},
+	workout_date: Date,
+	startsAt: Date,
+	endsAt: Date,
+	exercises: [],
+	type: String
+});
+var workoutsModel = testdb.model('workouts', workoutsSchema, 'workouts');
+
+//==============EXERCISE MODEL=============//
+var exercisesSchema = mongoose.Schema({
+	name: String,
+	muscle_groups: [],
+	instructions: String
+});
+var exercisesModel = testdb.model('exercises', exercisesSchema, 'exercises');
 
 //=======================================//
 //=========SET UP SOME ROUTES============//
@@ -156,6 +179,51 @@ app.post("/users", function(req, res) {
   var newUser = req.body;
 
   testdb.collection('Users').insertOne(newUser, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new contact.");
+    } else {
+      res.status(201).json(doc);
+    }
+  });
+});
+
+//============WORKOUTS ROUTES================//
+app.get('/workouts', function(req, res) {
+    workoutsModel.find({}, function(error, data){
+        res.json(data);
+    });
+});
+
+app.get('/workouts/:id', function(req, res) {
+		console.log("ID: " + req.params.id);
+    workoutsModel.find({'user.id': req.params.id }, function(error, data){
+        res.json(data);
+    });
+});
+
+app.post("/workouts", function(req, res) {
+  var newWorkout = req.body;
+
+  testdb.collection('workouts').insertOne(newWorkout, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new workout.");
+    } else {
+      res.status(201).json(doc);
+    }
+  });
+});
+
+//============EXERCISE ROUTES================//
+app.get('/exercises', function(req, res) {
+    exercisesModel.find({}, function(error, data){
+        res.json(data);
+    });
+});
+
+app.post('/exercises', function(req, res) {
+  var newExercise = req.body;
+
+  testdb.collection('exercises').insertOne(newExercise, function(err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to create new contact.");
     } else {
